@@ -24,11 +24,13 @@ public class Product {
     )
     private Long productId;
     private String name;
+    @Column(columnDefinition = "LONGTEXT")
     private String description;
     private Double price;
     private String imageUrl;
 
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id")
     private Category category;
 
 }

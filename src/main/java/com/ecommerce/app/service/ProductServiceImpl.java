@@ -4,9 +4,11 @@ import com.ecommerce.app.entity.Product;
 import com.ecommerce.app.repository.ProductRepository;
 import com.ecommerce.app.service.dao.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;

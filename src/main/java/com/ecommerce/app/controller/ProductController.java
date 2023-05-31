@@ -5,10 +5,7 @@ import com.ecommerce.app.service.dao.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +22,7 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
+    @PostMapping(value = "/")
     public ResponseEntity<List<Product>> saveAllProducts(@RequestBody List<Product> products){
         List<Product> savedProducts = productService.saveAllProducts(products);
         return new ResponseEntity<>(savedProducts,HttpStatus.CREATED);

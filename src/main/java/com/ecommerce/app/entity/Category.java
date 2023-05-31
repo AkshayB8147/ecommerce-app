@@ -8,7 +8,13 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "category")
+@Table(
+        name = "category",
+        uniqueConstraints = @UniqueConstraint(
+                name = "category_name",
+                columnNames = "name"
+        )
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,11 +24,14 @@ public class Category {
             name = "categoryId",
             sequenceName = "category_sequence"
     )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "category_sequence"
+    )
     private Long categoryId;
     private String name;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
+    @OneToMany(mappedBy = "category")
     private List<Product> products;
 
 }

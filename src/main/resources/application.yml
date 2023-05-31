@@ -4,10 +4,10 @@ server:
 spring:
   datasource:
     url: jdbc:mysql://localhost:7800/ecommerce
-    user: root
+    username: root
     password:
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-  hibernate:
-    ddl_auto: update
-  show-sql: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
