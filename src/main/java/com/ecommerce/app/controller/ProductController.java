@@ -22,10 +22,29 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable(value = "id") Long productId){
+        Product product = productService.getProductById(productId);
+        return new ResponseEntity<>(product, HttpStatus.OK);
+    }
+
     @PostMapping(value = "/")
     public ResponseEntity<List<Product>> saveAllProducts(@RequestBody List<Product> products){
         List<Product> savedProducts = productService.saveAllProducts(products);
         return new ResponseEntity<>(savedProducts,HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/saveProduct")
+    public ResponseEntity<Product> saveProduct(@RequestBody Product product){
+        Product savedProduct = productService.saveProduct(product);
+        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Product> updateProduct(@PathVariable(value = "id") Long productId, @RequestBody Product product){
+        Product savedProduct = productService.updateProduct(productId, product);
+
+        return new ResponseEntity<>(savedProduct, HttpStatus.OK);
     }
 
 }

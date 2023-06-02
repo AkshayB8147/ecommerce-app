@@ -1,10 +1,12 @@
 package com.ecommerce.app.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -22,14 +24,23 @@ public class Product {
             strategy = GenerationType.SEQUENCE
     )
     private Long productId;
+
     private String name;
+
     @Column(columnDefinition = "LONGTEXT")
     private String description;
+
     private Double price;
+
     private String imageUrl;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "products")
+    private List<Cart> carts;
 
 }

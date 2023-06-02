@@ -9,11 +9,12 @@ import java.util.List;
 
 @Entity
 @Table(
-        name = "category",
-        uniqueConstraints = @UniqueConstraint(
-                name = "category_name",
-                columnNames = "name"
-        )
+        name = "category"
+//        ,
+//        uniqueConstraints = @UniqueConstraint(
+//                name = "category_name",
+//                columnNames = "name"
+//        )
 )
 @Data
 @NoArgsConstructor
@@ -31,7 +32,10 @@ public class Category {
     private Long categoryId;
     private String name;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(
+            mappedBy = "category",
+            cascade = CascadeType.ALL
+    )
     private List<Product> products;
 
 }
