@@ -1,19 +1,18 @@
 package com.ecommerce.app.service.dao;
 
-import com.ecommerce.app.entity.Product;
-import com.ecommerce.app.exceptions.ProductNotPresentException;
+import com.ecommerce.app.dto.product.ProductDto;
+import com.ecommerce.app.entity.Category;
 
 import java.util.List;
 
 public interface ProductService {
 
-    public List<Product> getAllProducts();
+    List<ProductDto> getAllProducts();
 
-    public List<Product> saveAllProducts(List<Product> products);
+    void saveProduct(ProductDto productDtoRequest, Category category);
 
-    public Product getProductById(Long productId) throws ProductNotPresentException;
+    ProductDto getProductById(Long productId);
 
-    public Product saveProduct(Product product);
+    void updateProduct(Long productId, ProductDto productDto, Category category);
 
-    public Product updateProduct(Long productId, Product product);
 }

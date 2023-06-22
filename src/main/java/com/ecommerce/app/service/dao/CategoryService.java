@@ -1,18 +1,20 @@
 package com.ecommerce.app.service.dao;
 
 import com.ecommerce.app.entity.Category;
-import com.ecommerce.app.exceptions.CategoryNotPresentException;
 
 import java.util.List;
 
 public interface CategoryService {
-    public List<Category> getAllCategories();
 
-    public List<Category> saveAllCategories(List<Category> categories);
+    List<Category> getAllCategories();
 
-    public Category getCategoryById(Long categoryId) throws CategoryNotPresentException;
+    Category readCategory(String categoryName);
 
-    public Category saveCategory(Category category);
+    Category readCategory(Long categoryId);
 
-    public Category updateCategory(Long categoryId, Category category);
+    void saveCategory(Category category);
+
+    void updateCategory(Long categoryId, Category category);
+
 }
+
