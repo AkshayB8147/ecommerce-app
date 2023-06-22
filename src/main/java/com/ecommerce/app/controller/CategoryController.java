@@ -1,12 +1,15 @@
 package com.ecommerce.app.controller;
 
+import com.ecommerce.app.dto.response.ApiResponse;
 import com.ecommerce.app.entity.Category;
 import com.ecommerce.app.service.dao.CategoryService;
+import com.ecommerce.app.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -16,31 +19,30 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping(value = "/")
-    public ResponseEntity<List<Category>> getAllCategories(){
+    public ResponseEntity<List<Category>> getCategories() {
         List<Category> categories = categoryService.getAllCategories();
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable(value = "categoryId") Long categoryId){
-        Category category = categoryService.getCategoryById(categoryId);
-        return new ResponseEntity<>(category, HttpStatus.OK);
-    }
 
     @PostMapping(value = "/")
-    public ResponseEntity<List<Category>> saveAllCategories(@RequestBody List<Category> categories){
-        List<Category> savedCategories = categoryService.saveAllCategories(categories);
-        return new ResponseEntity<>(savedCategories, HttpStatus.OK);
-    }
-    @PostMapping(value = "/saveCategory")
-    public ResponseEntity<Category> saveCategory(@RequestBody Category category){
-        Category savedCategory = categoryService.saveCategory(category);
-        return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse> createCategory(@Valid @RequestBody Category category){
+        if(!Helper.isNull(categoryService.readCategory(category.getName()))) {
+            return new ResponseEntity<>(new ApiResponse(false, "Category already exists"), HttpStatus.CONFLICT);
+        }
+        categoryService.saveCategory(category);
+        return new ResponseEntity<>(new ApiResponse(true, "Category created successfully"),HttpStatus.CREATED);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable(value = "id") Long categoryId, @RequestBody Category category) {
-        Category savedCategory = categoryService.updateCategory(categoryId, category);
-
-        return new ResponseEntity<>(savedCategory, HttpStatus.OK);
+    @PutMapping(value = "/{categoryId}/update")
+    public ResponseEntity<ApiResponse> updateCategory(
+            @PathVariable(name = "categoryId") Long categoryId,
+            @Valid @RequestBody Category category
+    ){
+        if(Helper.isNull(categoryService.readCategory(categoryId))) {
+            return new ResponseEntity<>(new ApiResponse(false, "Category not exists"), HttpStatus.CONFLICT);
+        }
+        categoryService.updateCategory(categoryId, category);
+        return new ResponseEntity<>(new ApiResponse(true, "Category updated successfully"),HttpStatus.CREATED);
     }
+
 }

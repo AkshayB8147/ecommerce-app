@@ -1,64 +1,60 @@
 package com.ecommerce.app.service;
 
+import com.ecommerce.app.dto.product.ProductDto;
+import com.ecommerce.app.entity.Category;
 import com.ecommerce.app.entity.Product;
-import com.ecommerce.app.exceptions.ProductNotPresentException;
+import com.ecommerce.app.exceptions.ProductNotExistsException;
 import com.ecommerce.app.repository.ProductRepository;
 import com.ecommerce.app.service.dao.ProductService;
+import com.ecommerce.app.service.mappers.ProductDtoMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ProductDtoMapper productDtoMapper;
+
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> getAllProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(productDtoMapper)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<Product> saveAllProducts(List<Product> products) {
-        return productRepository.saveAll(products);
+    public void saveProduct(ProductDto productDtoRequest, Category category) {
+        Product productToSave = new Product(productDtoRequest, category);
+        log.info("Saved Product :{}", productRepository.save(productToSave));
     }
 
     @Override
-    public Product getProductById(Long productId) throws ProductNotPresentException{
-        Optional<Product> product = productRepository.findById(productId);
-        if (!product.isPresent()){
-            throw new ProductNotPresentException("Product not found " + productId);
+    public ProductDto getProductById(Long productId) {
+        return productRepository.findById(productId)
+                .map(productDtoMapper)
+                .orElseThrow(() -> new ProductNotExistsException("Product not exists: " + productId));
+    }
+
+    @Override
+    public void updateProduct(Long productId, ProductDto productDto, Category category) {
+        if(
+                !productRepository.existsById(productId) ||
+                        (!productId.equals(productDto.getProductId()) && productDto.getProductId() != null)
+        ) {
+            throw new ProductNotExistsException("Product not exists with id :" + productId);
         }
-        return product.get();
-    }
-
-    @Override
-    public Product saveProduct(Product product) {
-        return productRepository.save(product);
-    }
-
-    @Override
-    public Product updateProduct(Long productId, Product product){
-        Product actualProduct = productRepository.findById(productId).get();
-        String name = (actualProduct.getName() == product.getName() && Objects.nonNull(product.getName()))
-                            ? product.getName()
-                            : actualProduct.getName();
-        String description = (actualProduct.getDescription() == product.getDescription() && Objects.nonNull(product.getDescription()))
-                ? product.getDescription()
-                : actualProduct.getDescription();
-        Double price = (actualProduct.getPrice() == product.getPrice() && Objects.nonNull(product.getPrice()))
-                ? product.getPrice()
-                : actualProduct.getPrice();
-        String imageUrl = (actualProduct.getImageUrl() == product.getImageUrl() && Objects.nonNull(product.getImageUrl()))
-                ? product.getImageUrl()
-                : actualProduct.getImageUrl();
-
-        actualProduct.setName(name);
-        actualProduct.setDescription(description);
-        actualProduct.setPrice(price);
-        actualProduct.setImageUrl(imageUrl);
-        return productRepository.save(actualProduct);
+        if(productDto.getProductId() == null) {
+            productDto.setProductId(productId);
+        }
+        Product product = new Product(productDto, category);
+        log.info("Saved Product :{}", productRepository.save(product));
     }
 }

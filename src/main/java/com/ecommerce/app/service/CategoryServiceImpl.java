@@ -1,16 +1,17 @@
 package com.ecommerce.app.service;
 
 import com.ecommerce.app.entity.Category;
-import com.ecommerce.app.exceptions.CategoryNotPresentException;
+import com.ecommerce.app.exceptions.CategoryNotFoundException;
 import com.ecommerce.app.repository.CategoryRepository;
 import com.ecommerce.app.service.dao.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
@@ -22,33 +23,32 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<Category> saveAllCategories(List<Category> categories) {
-        return categoryRepository.saveAll(categories);
+    public Category readCategory(String categoryName) {
+        return categoryRepository.getByName(categoryName);
     }
 
     @Override
-    public Category getCategoryById(Long categoryId) throws CategoryNotPresentException {
-        Optional<Category> category = categoryRepository.findById(categoryId);
-        if (!category.isPresent()){
-            throw new CategoryNotPresentException("Category not found " + categoryId);
+    public Category readCategory(Long categoryId){
+        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
+        if(!optionalCategory.isPresent()) {
+            throw new CategoryNotFoundException("Invalid category or not present" + categoryId);
         }
-        return category.get();
+        log.info("Retrieved Data: {}", optionalCategory.get());
+        return optionalCategory.get();
     }
 
     @Override
-    public Category saveCategory(Category category) {
-        return categoryRepository.save(category);
+    public void saveCategory(Category category) {
+        log.info("Incoming data: {}", categoryRepository.save(category));
     }
 
     @Override
-    public Category updateCategory(Long categoryId, Category category) {
-        Category actualCategory = categoryRepository.findById(categoryId).get();
-
-        String name = (actualCategory.getName() == category.getName() && Objects.nonNull(category.getName())) ? actualCategory.getName() : category.getName();
-
-        actualCategory.setName(name);
-        return categoryRepository.save(actualCategory);
+    public void updateCategory(Long categoryId, Category category) {
+        Category fetchedCategory = categoryRepository.findById(categoryId).get();
+        log.info("Before Updating data: {}", fetchedCategory);
+        fetchedCategory.setName(category.getName());
+        fetchedCategory.setDescription(category.getDescription());
+        log.info("updated data: {}",categoryRepository.save(fetchedCategory));
     }
-
 
 }

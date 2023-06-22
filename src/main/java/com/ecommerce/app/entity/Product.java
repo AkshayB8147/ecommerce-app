@@ -1,46 +1,54 @@
 package com.ecommerce.app.entity;
 
+import com.ecommerce.app.dto.product.ProductDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "products")
 @Data
-@AllArgsConstructor
+@ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class Product {
     @Id
-    @SequenceGenerator(
-            name = "productId",
-            sequenceName = "products_sequence"
-    )
-    @GeneratedValue(
-            generator = "products_sequence",
-            strategy = GenerationType.SEQUENCE
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
 
+    @NotBlank
     private String name;
 
+    @NotNull
+    private double price;
+
+    @NotBlank
     @Column(columnDefinition = "LONGTEXT")
     private String description;
 
-    private Double price;
-
+    @NotBlank
     private String imageUrl;
 
+    // Many products to one category bidirectional relationship
     @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "products")
-    private List<Cart> carts;
+    public Product(ProductDto productDto, Category category) {
+        super();
+        this.productId = productDto.getProductId();
+        this.name = productDto.getName();
+        this.price = productDto.getPrice();
+        this.description = productDto.getDescription();
+        this.imageUrl = productDto.getImageUrl();
+        this.category = category;
+    }
+
 
 }
