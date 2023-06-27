@@ -1,7 +1,7 @@
 package com.ecommerce.app.service;
 
 import com.ecommerce.app.entity.Category;
-import com.ecommerce.app.exceptions.CategoryNotFoundException;
+import com.ecommerce.app.exceptions.ResourceNotFoundException;
 import com.ecommerce.app.repository.CategoryRepository;
 import com.ecommerce.app.service.dao.CategoryService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,13 +27,10 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category readCategory(Long categoryId){
-        Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
-        if(!optionalCategory.isPresent()) {
-            throw new CategoryNotFoundException("Invalid category or not present" + categoryId);
-        }
-        log.info("Retrieved Data: {}", optionalCategory.get());
-        return optionalCategory.get();
+    public Category readCategory(Long categoryId) throws ResourceNotFoundException{
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Category", "id", categoryId));
     }
 
     @Override
@@ -44,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void updateCategory(Long categoryId, Category category) {
-        Category fetchedCategory = categoryRepository.findById(categoryId).get();
+        Category fetchedCategory = readCategory(categoryId);
         log.info("Before Updating data: {}", fetchedCategory);
         fetchedCategory.setName(category.getName());
         fetchedCategory.setDescription(category.getDescription());

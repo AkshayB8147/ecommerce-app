@@ -1,8 +1,12 @@
 package com.ecommerce.app.repository;
 
 import com.ecommerce.app.entity.Cart;
+import com.ecommerce.app.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.util.List;
+@Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
-    public Cart getCartByUser(Long userId);
+    List<Cart> findAllByUserOrderByCreatedDateDesc(User user);
 }

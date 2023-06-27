@@ -1,5 +1,6 @@
 package com.ecommerce.app.entity;
 
+import com.ecommerce.app.dto.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,32 +12,30 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
-@Table(name = "user")
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @NotBlank(message = "User Name should not be blank")
-    private String name;
-
-    @NotBlank(message = "Email should be blank")
-    @Email()
+    private String firstName;
+    private String lastName;
     private String email;
-
     private Long phone;
-
-    @NotBlank(message = "Password should not be blank")
     private String password;
 
-    @NotBlank(message = "Address should not be blank")
-    private String address;
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    private List<Order> orders;
+
+    public User(String firstName, String lastName, String email,Long phone, String password) {
+        super();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+    }
 
 }

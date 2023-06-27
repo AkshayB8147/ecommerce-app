@@ -3,7 +3,7 @@ package com.ecommerce.app.service;
 import com.ecommerce.app.dto.product.ProductDto;
 import com.ecommerce.app.entity.Category;
 import com.ecommerce.app.entity.Product;
-import com.ecommerce.app.exceptions.ProductNotExistsException;
+import com.ecommerce.app.exceptions.ResourceNotFoundException;
 import com.ecommerce.app.repository.ProductRepository;
 import com.ecommerce.app.service.dao.ProductService;
 import com.ecommerce.app.service.mappers.ProductDtoMapper;
@@ -37,19 +37,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto getProductById(Long productId) {
+    public Product getProductById(Long productId) throws ResourceNotFoundException{
         return productRepository.findById(productId)
-                .map(productDtoMapper)
-                .orElseThrow(() -> new ProductNotExistsException("Product not exists: " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
     }
 
     @Override
-    public void updateProduct(Long productId, ProductDto productDto, Category category) {
+    public void updateProduct(Long productId, ProductDto productDto, Category category) throws ResourceNotFoundException {
         if(
                 !productRepository.existsById(productId) ||
                         (!productId.equals(productDto.getProductId()) && productDto.getProductId() != null)
         ) {
-            throw new ProductNotExistsException("Product not exists with id :" + productId);
+            throw new ResourceNotFoundException("Product", "id", productId);
         }
         if(productDto.getProductId() == null) {
             productDto.setProductId(productId);

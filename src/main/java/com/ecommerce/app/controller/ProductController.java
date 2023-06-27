@@ -5,6 +5,7 @@ import com.ecommerce.app.dto.response.ApiResponse;
 import com.ecommerce.app.entity.Category;
 import com.ecommerce.app.service.dao.CategoryService;
 import com.ecommerce.app.service.dao.ProductService;
+import com.ecommerce.app.service.mappers.ProductDtoMapper;
 import com.ecommerce.app.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,8 @@ public class ProductController {
     private ProductService productService;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private ProductDtoMapper productDtoMapper;
 
     @GetMapping(value = "/")
     public ResponseEntity<List<ProductDto>> getAllProducts(){
@@ -29,8 +32,8 @@ public class ProductController {
     }
 
     @GetMapping(value = "/{productId}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable(name = "productId") Long productId){
-        ProductDto productDto = productService.getProductById(productId);
+    public ResponseEntity<ProductDto> getProductById(@PathVariable(name = "productId") Long productId) {
+        ProductDto productDto = productDtoMapper.apply(productService.getProductById(productId));
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
